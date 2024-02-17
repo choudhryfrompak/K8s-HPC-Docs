@@ -487,6 +487,38 @@ On the Dashboard it looks like
 after clicking on the cluster:
 ![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/d8e96b7c-24cb-48ac-8ce2-ac2aa5c85d56)
 
+
+# Preparing cluster for GPU Workloads:
+
+We have to setup this cluster for gpu workloads so to make it able to use the core container runtime to use pods we have to do following things:
+## Pre-requisites:
+The only pre-requisite is that you must have Nvidia drivers installed. Then we can initialize the setup by:
+
+- Installing Nvidia Container Toolkit on all worker nodes.
+
+Installing Nvidia container toolkit with Apt
+- Configure the production repository:
+```bash
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+```
+- Optionally, configure the repository to use experimental packages:
+
+```bash
+sed -i -e '/experimental/ s/^#//g' /etc/apt/sources.list.d/nvidia-container-toolkit.list
+Update the packages list from the repository:
+```
+```bash
+sudo apt-get update
+```
+Install the NVIDIA Container Toolkit packages:
+```bash
+sudo apt-get install -y nvidia-container-toolkit
+```
+
+- Repeat it on all workers.
 ## Conclusion
 
 With the master and worker nodes set up, you have a fully functioning Kubernetes cluster ready to deploy and manage applications.
