@@ -283,6 +283,13 @@ Now to make a container Runtime for our pods we need to install Cntainerd. Later
     sudo chown $(id -u):$(id -g) $HOME/.kube/config
     export KUBECONFIG=/etc/kubernetes/admin.conf
     ```
+You will also get a statement like the one below:
+```bash
+#Command to run on worker nodes
+kubeadm join <control-plane-ip>:6443 --token <token> \
+ --discovery-token-ca-cert-hash <hash>
+```
+###You should SAVE THIS JOIN COMMAND to run on worker nodes later.
 
 12. Install CNI Flannel for networking:
     ```bash
@@ -373,20 +380,105 @@ docker logs <container-id> 2>&1 |grep "Bootstrap Password:"
 - copy that command and open terminal of your master node and don't forget enabling root access by `sudo su -` after that paste and run the command you copied. wait for its completion.
 
 - NOW Go back to browser , you will see that your cluster is succesfully added showing all the resources and ready for containerizing pods.
-   
+   ### Now we have our master node added to the RANCHER Dashboard, we can move to adding our Workers to our cluster. But before that we need to install kubernetes on All worker nodes.
+  
 ## Worker Node Setup
 
-Follow similar steps for setting up worker nodes:
+Like with the K8s Master, the first step is to set the hostnames. First, map the hostnames to IP addresses:
+```bash
+#become root
+sudo su
+```
+```bash
+#set hostname
+hostnamectl set-hostname k8s-worker<number of worker node>
+```
+```bash
+#Maps hostnames to IP addresses
+cat << EOF >> /etc/hosts
+<insert K8s Masternode ip> k8s-control
+<insert worker 1 ip> k8s-worker1
+<insert worker 2 ip> k8s-worker2
+EOF
+```
+```bash
+#exit root
+exit
+```
+```bash
+#exit the server and then sign back in
+exit
+```
 
-1. Set the hostname and map hostnames to IP addresses.
+Now completing pre-requisites:
+```bash
+#update server and install apt-transport-https and curl
+sudo apt-get update -y
+sudo apt install -y apt-transport-https curl
+```
+```bash
+#Install containerd 
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install -y containerd.io
+```
+```bash
+#Configure containerd
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
+```
+```bash
+#set SystemdCgroup = true within configs.toml
+sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+```
+```bash
+#Restart containerd daemon
+sudo systemctl restart containerd
+```
+```bash
+#Enable containerd to start automatically at boot time
+sudo systemctl enable containerd
+```
+Now initializing kubernetes installation:
+```bash
+#install kubeadm, kubectl, kubelet,and kubernetes-cni 
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+sudo apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+sudo apt install -y kubeadm kubelet kubectl kubernetes-cni
+```
+```bash
+#disable swap
+sudo swapoff -a
+```
+```bahs
+#load the br_netfilter module in the Linux kernel
+sudo modprobe br_netfilter
+```
+now you'll need to have your hands on the keyboard to use nano and enter/exit root:
+```bash
+#check if a swap entry exists and remove it if it does
+sudo nano /etc/fstab
+```
+```bash
+#enable ip-forwarding 
+sudo su 
+echo 1 > /proc/sys/net/ipv4/ip_forward
+exit
+```
 
-2. Update server, install necessary packages, and configure containerd.
-
-3. Install Kubernetes components.
-
-4. Disable swap and load `br_netfilter` module.
-
-5. Run the command saved during Kubernetes initialization on the master node to join the worker nodes to the cluster.
+### Finally, you'll want to run the command that we saved when running Kubernetes on the Control Plane:
+```bash
+#Command to run on worker nodes
+kubeadm join <control-plane-ip>:6443 --token <token> \
+ --discovery-token-ca-cert-hash <hash>
+```
+check If the joins have been done correctly on both worker nodes,by running:
+```bash
+#in root of master node
+kubectl get nodes
+```
 
 ## Conclusion
 
