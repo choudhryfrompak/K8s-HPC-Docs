@@ -518,7 +518,7 @@ Install the NVIDIA Container Toolkit packages:
 sudo apt-get install -y nvidia-container-toolkit
 ```
 
-- Repeat it on all workers.
+- Repeat tthis on all workers.
 ## Conclusion
 
 With the master and worker nodes set up, you have a fully functioning Kubernetes cluster ready to deploy and manage applications.
