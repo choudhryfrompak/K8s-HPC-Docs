@@ -156,7 +156,7 @@ Repeat this process on all Nodes that don't have a static IP
 # Setting up a Kubernetes Cluster
 Starting the Setup of The Kubernetes Cluster:
 - I would recommend setting up `SSH` on all nodes. Because it will make it easy to setup.
-TheGuide to enable `ssh` is here:
+### The Guide to enable `ssh` is here:
 
 ## Enabling SSH
 - in case you have to enable ssh access on all computers. you can do this by following the processs below
@@ -205,7 +205,7 @@ Open ssh tcp port 22 using ufw firewall, run:
 ```
 - Now you can use your laptop That's on the same network to `ssh` into all the machines and install kubernetes on them.
 
-## Master Node Setup
+# Master Node Setup
 
 After SSH into the master node instance, follow these steps:
 
@@ -216,6 +216,7 @@ After SSH into the master node instance, follow these steps:
     ```
 
 2. Map hostnames to IP addresses by adding entries to `/etc/hosts`:
+3. you can do this by modifying & running this command:
     ```bash
     cat << EOF >> /etc/hosts
     <insert master node ip> k8s-master
@@ -224,54 +225,58 @@ After SSH into the master node instance, follow these steps:
     EOF
     ```
 
-3. Exit the root and the server, then sign back in.
+4. Exit the root and the server, then ssh back in.
 
-4. Update the server and install necessary packages:
+5. Update the server and install necessary packages:
     ```bash
     sudo apt-get update -y
     sudo apt install -y apt-transport-https curl vim git
     ```
-
-5. Install containerd:
+Now to make a container Runtime for our pods we need to install Cntainerd. Later on we will configure it with nvidia GPU device plugin to make GPUs work in our pods.
+6. Install containerd by running this:
     ```bash
     # Install containerd
     sudo mkdir -p /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update -y
-    sudo apt-get install -y containerd.io
+    sudo apt-get install -y containerd.io ```
 
+
+```bash
     # Configure containerd
     sudo mkdir -p /etc/containerd
     sudo containerd config default | sudo tee /etc/containerd/config.toml
-    ```
+```
 
-6. Set `SystemdCgroup` to `true` within `config.toml`, then restart containerd daemon and enable it to start automatically at boot time.
+7. Set `SystemdCgroup` to `true` within `config.toml`, then restart containerd daemon and enable it to start automatically at boot time.
     ```bash
     sudo sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
     sudo systemctl restart containerd
     sudo systemctl enable containerd
     ```
 
-7. Install Kubernetes components:
+   - After this, We can proceed to Kubernetes components installation
+
+8. Install Kubernetes components:
     ```bash
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
     sudo apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
     sudo apt install -y kubeadm kubelet kubectl kubernetes-cni
     ```
 
-8. Disable swap and load `br_netfilter` module in the Linux kernel.
+9. Disable swap and load `br_netfilter` module in the Linux kernel.
     ```bash
     sudo swapoff -a
     sudo modprobe br_netfilter
     ```
 
-9. Initialize Kubernetes cluster:
+10. Initialize Kubernetes cluster:
     ```bash
     sudo kubeadm init --pod-network-cidr=10.244.0.0/16
     ```
 
-10. Allow `kubectl` to interact with the cluster:
+11. Allow `kubectl` to interact with the cluster:
     ```bash
     mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -279,10 +284,13 @@ After SSH into the master node instance, follow these steps:
     export KUBECONFIG=/etc/kubernetes/admin.conf
     ```
 
-11. Install CNI Flannel for networking:
+12. Install CNI Flannel for networking:
     ```bash
     kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/v0.20.2/Documentation/kube-flannel.yml
     ```
+- Now at this point the Master node is ready.
+  ## NOTE
+For some weird reason we have to add the master node to the rancher dashboard first then after that we can join worker nodes with the Master.
 
 ## Worker Node Setup
 
