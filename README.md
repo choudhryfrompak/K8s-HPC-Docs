@@ -1,9 +1,9 @@
 # K8s-HPC-Docs
 This Documentation is about setting up a kubernetes cluster based on K8s version of kubernetes. This cluster will be deployment ready for GPU Workloads and all other workloads using the core Runtime.
 For the process we need At Least:
-1 Master node/ Control plane
-1 worker Node
-1 Dashboard(Raancher) Node
+- 1 Master node/ Control plane
+- 1 worker Node
+- 1 Dashboard(Raancher) Node
 
 These all nodes must have static IP Adresses. You can setup a static IP by Following this Guide
 
@@ -139,11 +139,11 @@ Now, finally, test the changes with the command `ip a` and you'll see that the `
 # Set a Static IP Using the GUI
 It is very easy to set a static IP through the Ubuntu GUI/ Desktop. Here are the steps:
 
-1: Search for settings.
-2: Click on either Network or Wi-Fi tab, depending on the interface you would like to modify.
-3: To open the interface settings, click on the gear icon next to the interface name.
-4: Select “Manual” in the IPV4 tab and enter your static IP address, Netmask and Gateway.
-Click on the Apply button.
+- Search for settings.
+- Click on either Network or Wi-Fi tab, depending on the interface you would like to modify.
+- To open the interface settings, click on the gear icon next to the interface name.
+- Select “Manual” in the IPV4 tab and enter your static IP address, Netmask and Gateway.
+- Click on the Apply button.
 ![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/8c02a4a2-8fce-4706-babb-0142ec44eec5)
 
 Verify by using the command `ip a`
