@@ -148,9 +148,59 @@ It is very easy to set a static IP through the Ubuntu GUI/ Desktop. Here are the
 
 Verify by using the command `ip a`
 ![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/0bc6ee05-2847-4836-858b-efa36a108a64)
-
+Repeat this process on all Nodes that don't have a static IP
 
 # Setting up a Kubernetes Cluster
+Starting the Setup of The Kubernetes Cluster:
+- I would recommend setting up `SSH` on all nodes. Because it will make it easy to setup.
+TheGuide to enable `ssh` is here:
+
+## Enabling SSH
+- in case you have to enable ssh access on all computers. you can do this by following the processs below
+- open the terminal and run:
+
+```bash
+  sudo apt-get update
+```
+let the packages update. after that run:
+
+```bash
+  sudo apt install openssh-server
+```
+This command will install openssh-server on your machine
+
+- Enable ssh server on Ubuntu, run: 
+```bash
+  sudo systemctl enable ssh
+```
+- By default, firewall will block ssh access. Therefore, you must enable ufw and open ssh port
+Open ssh tcp port 22 using ufw firewall, run:
+
+```bash
+  sudo ufw allow ssh
+```
+- Now to check status of ssh-server run:
+```bash
+    sudo systemctl status ssh
+```
+- Your ssh is now enabled:
+
+- Now to get your public ip adress run:
+
+```bash
+    hostname -I
+```
+- note your IP ADDRESS and machine name and make a command like:
+
+```bash
+    ssh <username>@<ip-address>
+```
+- Replace <username> with your machine name and <ip-address> with your machine ip. the command will look like:
+
+```bash
+    ssh k8s-master@192.168.xx.x
+```
+- Now you can use your laptop That's on the same network to `ssh` into all the machines and install kubernetes on them.
 
 ## Master Node Setup
 
