@@ -481,6 +481,11 @@ check If the joins have been done correctly on both worker nodes,by running:
 #in root of master node
 kubectl get nodes
 ```
+On the Dashboard it looks like
+![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/ea61c096-0cb0-4f98-9032-0a534c50370a)
+
+after clicking on the cluster:
+![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/d8e96b7c-24cb-48ac-8ce2-ac2aa5c85d56)
 
 ## Conclusion
 
