@@ -7,13 +7,13 @@ For the process we need At Least:
 
 These all nodes must have static IP Adresses. You can setup a static IP by Following this Guide
 
-#Set a Static IP Using the Command Line
+# Set a Static IP Using the Command Line
 In this section, we will explore all the steps in detail needed to configure a static IP.
 
-##Step 1: Launch the terminal
+## Step 1: Launch the terminal
 You can launch the terminal using the shortcut Ctrl+ Shift+t.
 
-##Step 2: Note information about the current network
+## Step 2: Note information about the current network
 We will need our current network details such as the current assigned IP, subnet mask, and the network adapter name so that we can apply the necessary changes in the configurations.
 
 Use the command below to find details of the available adapters and the respective IP information.
@@ -39,7 +39,7 @@ As my current adapter is `eth0`, the below details are relevant.
 ```
 It is worth noting that the current IP `172.23.199.129` is dynamically assigned. It has 20 bits reserved for the netmask. The broadcast address is `172.23.207.255`.
 
-###Note the subnet
+### Note the subnet
 We can find the subnet mask details using the command below:
 ```bash
 ifconfig -a
@@ -51,7 +51,7 @@ Select the output against your adapter and read it carefully.
 IP is `172.23.199.129` and subnet mask is `255.255.240.0`
 Based on the class and subnet mask, the usable host IP range for my network is: `172.23.192.1 - 172.23.207.254`.
 
-##Step 3: Make configuration changes
+## Step 3: Make configuration changes
 Netplan is the default network management tool for the latest Ubuntu versions. Configuration files for Netplan are written using YAML and end with the extension .yaml.
 
 Note: Be careful about spaces in the configuration file as they are part of the syntax. Without proper indentation, the file won't be read properly.
