@@ -146,8 +146,11 @@ It is very easy to set a static IP through the Ubuntu GUI/ Desktop. Here are the
 - Click on the Apply button.
 ![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/8c02a4a2-8fce-4706-babb-0142ec44eec5)
 
+
 Verify by using the command `ip a`
+
 ![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/0bc6ee05-2847-4836-858b-efa36a108a64)
+
 Repeat this process on all Nodes that don't have a static IP
 
 # Setting up a Kubernetes Cluster
