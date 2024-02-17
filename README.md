@@ -1,4 +1,11 @@
 # K8s-HPC-Docs
+This Documentation is about setting up a kubernetes cluster based on K8s version of kubernetes. This clusterwill be deployment ready for GPU Workloads and all other workloads using the core Runtime.
+For the process we need At Least:
+1 Master node/ Control plane
+1 worker Node
+1 Dashboard(Raancher) Node
+
+These all nodes must have static IP Adresses. You can setup a static IP by Following this Guide
 # Setting up a Kubernetes Cluster
 
 ## Master Node Setup
