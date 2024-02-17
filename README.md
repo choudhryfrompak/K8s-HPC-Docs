@@ -268,6 +268,8 @@ Now to make a container Runtime for our pods we need to install Cntainerd. Later
 9. Disable swap and load `br_netfilter` module in the Linux kernel.
     ```bash
     sudo swapoff -a
+    #check if a swap entry exists and remove it if it does
+    sudo nano /etc/fstab
     sudo modprobe br_netfilter
     ```
 
