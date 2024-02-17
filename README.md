@@ -553,6 +553,76 @@ And then restart containerd:
 sudo systemctl restart containerd
 ```
 - Repeat this on all workers.
+
+  ## Deploying Daemonset for GPU PLUGIN:
+  Go in the terminal of Master node and become root
+  ```bash
+  sudo su -
+  ```
+  Now to deploy Daemonset run:
+  ```bash
+  kubectl create -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v0.14.4/nvidia-device-plugin.yml
+  ```
+  - This will deploy a daemonset that will handle the gpu workloads.
+  After this
+```bash
+apiVersion: v1
+kind: Pod
+metadata:
+  name: podgpu
+  namespace: default
+  labels:
+    app: podgpu
+spec:
+  containers:
+    - name: podgpu
+      image: bilal77511/tljh:v1
+      imagePullPolicy: Always
+      resources:
+        limits:
+          nvidia.com/gpu: "1"
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: "/var/run/secrets/kubernetes.io/serviceaccount"
+          name: kube-api-access-626dl
+          readOnly: true
+  dnsConfig:
+    nameservers:
+      - "8.8.8.8"
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  volumes:
+    - name: kube-api-access-626dl
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+                - key: ca.crt
+                  path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+
+```
+
+- Now Execute `/bin/bash` shell into the pod by running
+```bash
+kubectl exec -it podgpu /bin/bash
+```
+- Now you can test whether GPUs are working or not by running:
+```bash
+nvidia-smi
+```
+
 ## Conclusion
 
 With the master and worker nodes set up, you have a fully functioning Kubernetes cluster ready to deploy and manage applications.
