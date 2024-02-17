@@ -517,8 +517,42 @@ Install the NVIDIA Container Toolkit packages:
 ```bash
 sudo apt-get install -y nvidia-container-toolkit
 ```
+## Configuring containerd (for Kubernetes)
+Configure the container runtime by using the nvidia-ctk command:
+```bash
+sudo nvidia-ctk runtime configure --runtime=containerd
+```
+The nvidia-ctk command modifies the /etc/containerd/config.toml file on the host. The file is updated so that containerd can use the NVIDIA Container Runtime.
 
-- Repeat tthis on all workers.
+### Restart containerd:
+```bash
+sudo systemctl restart containerd
+```
+
+### Configure containerd
+When running kubernetes with containerd, edit the config file which is usually present at /etc/containerd/config.toml to set up nvidia-container-runtime as the default low-level runtime:
+```bash
+version = 2
+[plugins]
+  [plugins."io.containerd.grpc.v1.cri"]
+    [plugins."io.containerd.grpc.v1.cri".containerd]
+      default_runtime_name = "nvidia"
+
+      [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+        [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+          privileged_without_host_devices = false
+          runtime_engine = ""
+          runtime_root = ""
+          runtime_type = "io.containerd.runc.v2"
+          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+            BinaryName = "/usr/bin/nvidia-container-runtime"
+```
+And then restart containerd:
+
+```bash
+sudo systemctl restart containerd
+```
+- Repeat this on all workers.
 ## Conclusion
 
 With the master and worker nodes set up, you have a fully functioning Kubernetes cluster ready to deploy and manage applications.
