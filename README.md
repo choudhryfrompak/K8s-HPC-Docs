@@ -292,6 +292,88 @@ Now to make a container Runtime for our pods we need to install Cntainerd. Later
   ## NOTE
 For some weird reason we have to add the master node to the rancher dashboard first then after that we can join worker nodes with the Master.
 
+## Setting Up Rancher
+
+- For a proper Graphical Dashboard monitoring and management system we are installing rancher.
+
+- The whole proccess of installiing rancher will be carried on the dasshboard node.
+
+- Once you have `SSH ACCES` of the dashboard node like we did on other machines in start and get its `IP ADDRESS`
+
+- Access this node from any other computer lke your laptop powershell to check whether it is publically available or not by using `ssh username@ip_address`
+
+- After accessing it we can now start setting up rancher.
+
+## installing docker-engine
+- we need  to install docker image to containerize rancher image
+
+- we can INSTALL the compaitable version suggested by rancher by running this command 
+
+```bashrc
+    curl https://releases.rancher.com/install-docker/20.10.sh | sh
+```
+
+- Note that the following sysctl setting must be applied:
+
+```net.bridge.bridge-nf-call-iptables=1```
+
+- To confirm whether docker is properly installed run ```docker``` 
+
+## containerizing rancher image:
+- We need to make rancher data presit accross reboots.
+- Rancher by default stores its data in ```/var/lib/rancher```
+- Lets create a space to save data into our specified directory.
+- We will make one by Running:
+```mkdir /kubernetes/rancher/volume```
+```cd /kubeernetes/rancher```
+- Now as the docker is properly installed and our volume folder is ready we can proceed by running a command that i have set up to make the installation easy. 
+
+Run:
+```bashrc
+docker run -d --name rancher-server -v ${PWD}/volume:/var/lib/rancher --restart=unless-stopped -p 80:80 -p 443:443 --privileged rancher/rancher:latest
+```
+- After running this wait for few minutes to let the rancher server start
+
+- Then go to a browser on any computer on the same network and type the `ip address` of your `Dashboard node`  the port 443 like this:
+```bashrc
+https://<ip_address>:443
+```
+Now you will be prompted with this screen.
+![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/401a70be-cfd0-42ce-aed8-7b4d4effc678)
+
+## Unlocking Rancher Dashboard
+
+- By default the rancher dashboard is locked the default password is somewhere in the logs of docker container and we need to pull it out for that we will go through some commands
+- Go back to terminal of dashboard node
+- we will need the container id on which rancher is spinning up. to get that, run: 
+```bashrc
+docker ps
+
+```
+
+- Now we got the container id run this command:
+```bashrc
+docker logs <container-id> 2>&1 |grep "Bootstrap Password:"
+```
+- Replace the ```<container-id>``` with the id of your container. when you run this command this will grab the bootstrap password.
+
+- Now again open the browser and enter that password 
+- Now it will ask you to change the password. set your desired password & proceed
+- Rancher is now properly installed on your dashboard node and is accessible on the network.
+
+- the next step is to import our main cluster into it.
+
+## importing main cluster to Rancher
+
+- As you are now on the homepage of rancher dashboard you will see a icon on top right that says `import existing` click on that and name your cluster and proceed. no need to mess with any other setting.
+![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/2eb06586-f481-4373-968c-7bd65f95e7f3)
+
+- Now it wwill show you some configuration command that starts with `curl -sfl` we will need the command with `-insecure` tag because we dont have ssl certificate don't worry we really dont need that
+- the command i am talking about maybe it is last among those three commands. 
+- copy that command and open terminal of your master node and don't forget enabling root access by `sudo su -` after that paste and run the command you copied. wait for its completion.
+
+- NOW Go back to browser , you will see that your cluster is succesfully added showing all the resources and ready for containerizing pods.
+   
 ## Worker Node Setup
 
 Follow similar steps for setting up worker nodes:
