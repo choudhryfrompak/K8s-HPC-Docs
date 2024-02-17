@@ -23,33 +23,35 @@ ip a
 ```
 The output will look something like this:
 
-image-14
-For my network, the current adapter is eth0. It could be different for your system
+![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/324cf503-d05d-474c-82ac-96f2c1bed1cb)
+
+For my network, the current adapter is `eth0`. It could be different for your system
 
 Note the current network adapter name
-As my current adapter is eth0, the below details are relevant.
-
+As my current adapter is `eth0`, the below details are relevant.
+```bash
 6: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
     link/ether 00:15:5d:df:c3:ad brd ff:ff:ff:ff:ff:ff
     inet 172.23.199.129/20 brd 172.23.207.255 scope global eth0
        valid_lft forever preferred_lft forever
     inet6 fe80::215:5dff:fedf:c3ad/64 scope link
        valid_lft forever preferred_lft forever
-It is worth noting that the current IP 172.23.199.129 is dynamically assigned. It has 20 bits reserved for the netmask. The broadcast address is 172.23.207.255.
+```
+It is worth noting that the current IP `172.23.199.129` is dynamically assigned. It has 20 bits reserved for the netmask. The broadcast address is `172.23.207.255`.
 
-Note the subnet
+###Note the subnet
 We can find the subnet mask details using the command below:
-
+```bash
 ifconfig -a
+```
 Select the output against your adapter and read it carefully.
 
-image-15
-IP is 172.23.199.129 and subnet mask is 255.255.240.0
-Based on the class and subnet mask, the usable host IP range for my network is: 172.23.192.1 - 172.23.207.254.
+![image](https://github.com/choudhryfrompak/K8s-HPC-Docs/assets/129526340/a5bf09bd-1a1e-4c5b-8a3d-072ba4a42d4d)
 
-Subnetting is a vast topic. For more info on subnetting and your usable IP ranges, check out this article.
+IP is `172.23.199.129` and subnet mask is `255.255.240.0`
+Based on the class and subnet mask, the usable host IP range for my network is: `172.23.192.1 - 172.23.207.254`.
 
-Step 3: Make configuration changes
+##Step 3: Make configuration changes
 Netplan is the default network management tool for the latest Ubuntu versions. Configuration files for Netplan are written using YAML and end with the extension .yaml.
 
 Note: Be careful about spaces in the configuration file as they are part of the syntax. Without proper indentation, the file won't be read properly.
