@@ -566,51 +566,81 @@ sudo systemctl restart containerd
   - This will deploy a daemonset that will handle the gpu workloads.
   After this
 ```bash
-apiVersion: v1
-kind: Pod
-metadata:
-  name: podgpu
-  namespace: default
-  labels:
-    app: podgpu
-spec:
-  containers:
-    - name: podgpu
-      image: bilal77511/tljh:v1
-      imagePullPolicy: Always
-      resources:
-        limits:
-          nvidia.com/gpu: "1"
-      securityContext:
-        privileged: true
-      volumeMounts:
-        - mountPath: "/var/run/secrets/kubernetes.io/serviceaccount"
-          name: kube-api-access-626dl
-          readOnly: true
-  dnsConfig:
-    nameservers:
-      - "8.8.8.8"
-  dnsPolicy: ClusterFirst
-  enableServiceLinks: true
-  volumes:
-    - name: kube-api-access-626dl
-      projected:
-        defaultMode: 420
-        sources:
-          - serviceAccountToken:
-              expirationSeconds: 3607
-              path: token
-          - configMap:
-              items:
-                - key: ca.crt
-                  path: ca.crt
-              name: kube-root-ca.crt
-          - downwardAPI:
-              items:
-                - fieldRef:
-                    apiVersion: v1
-                    fieldPath: metadata.namespace
-                  path: namespace
+kubectl run podgpu --image=bilal77511/tljh:v1 --restart=Never --overrides='
+{
+  "apiVersion": "v1",
+  "spec": {
+    "containers": [
+      {
+        "name": "podgpu",
+        "image": "bilal77511/tljh:v1",
+        "imagePullPolicy": "Always",
+        "resources": {
+          "limits": {
+            "nvidia.com/gpu": "1"
+          }
+        },
+        "securityContext": {
+          "privileged": true
+        },
+        "volumeMounts": [
+          {
+            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+            "name": "kube-api-access-626dl",
+            "readOnly": true
+          }
+        ]
+      }
+    ],
+    "dnsConfig": {
+      "nameservers": [
+        "8.8.8.8"
+      ]
+    },
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "volumes": [
+      {
+        "name": "kube-api-access-626dl",
+        "projected": {
+          "defaultMode": 420,
+          "sources": [
+            {
+              "serviceAccountToken": {
+                "expirationSeconds": 3607,
+                "path": "token"
+              }
+            },
+            {
+              "configMap": {
+                "name": "kube-root-ca.crt",
+                "items": [
+                  {
+                    "key": "ca.crt",
+                    "path": "ca.crt"
+                  }
+                ]
+              }
+            },
+            {
+              "downwardAPI": {
+                "items": [
+                  {
+                    "fieldRef": {
+                      "apiVersion": "v1",
+                      "fieldPath": "metadata.namespace"
+                    },
+                    "path": "namespace"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}'
 
 ```
 
