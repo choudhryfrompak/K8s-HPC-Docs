@@ -517,7 +517,7 @@ Install the NVIDIA Container Toolkit packages:
 ```bash
 sudo apt-get install -y nvidia-container-toolkit
 ```
-## Configuring containerd (for Kubernetes)
+## Configuring containerd (for Kubernetes)
 Configure the container runtime by using the nvidia-ctk command:
 ```bash
 sudo nvidia-ctk runtime configure --runtime=containerd
