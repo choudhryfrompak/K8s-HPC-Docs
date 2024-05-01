@@ -659,5 +659,4 @@ With the master and worker nodes set up, you have a fully functioning Kubernetes
 
 
 
-links
-https://drive.google.com/file/d/16JObDrFOuP9yWoepLV7_vR1V47y9Cwop/view?usp=drive_link
+
