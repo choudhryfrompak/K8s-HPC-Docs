@@ -262,7 +262,7 @@ Now to make a container Runtime for our pods we need to install Cntainerd. Later
     ```bash
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
     sudo apt-add-repository -y "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-    sudo apt install -y kubeadm kubelet kubectl kubernetes-cni
+    sudo apt install -y kubeadm kubelet kubectl
     ```
 
 9. Disable swap and load `br_netfilter` module in the Linux kernel.
